@@ -20,7 +20,7 @@ const htmlPath = path.join(dist, 'index.html');
 let html = fs.readFileSync(htmlPath, 'utf8');
 html = html.replace('<html lang="en">', '<html lang="zh-CN">');
 html = html.replace('</head>', `  <link rel="manifest" href="./manifest.webmanifest" />\n  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />\n  <meta name="theme-color" content="#FAF7F0" />\n</head>`);
-html = html.replace('</body>', `  <script>if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('./service-worker.js').catch(function () {}); });</script>\n</body>`);
+html = html.replace('</body>', `  <script>if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('./service-worker.js').catch(function (error) { console.warn('service worker registration failed', error); }); });</script>\n</body>`);
 fs.writeFileSync(htmlPath, html);
 
 function files(dir) {
@@ -29,7 +29,13 @@ function files(dir) {
     return entry.isDirectory() ? files(name) : [name];
   });
 }
-const all = files(dist).filter(file => !file.endsWith('service-worker.js')).sort();
+// GitHub Pages 不提供点文件（.nojekyll 实测 404），不能放进预缓存清单，否则 install 失败导致离线不可用。
+const all = files(dist)
+  .filter(file => {
+    const rel = path.relative(dist, file);
+    return !rel.endsWith('service-worker.js') && !rel.split(path.sep).some(part => part.startsWith('.'));
+  })
+  .sort();
 const hash = crypto.createHash('sha256');
 for (const file of all) hash.update(path.relative(dist, file)).update(fs.readFileSync(file));
 const cache = `protein-calculator-${hash.digest('hex').slice(0, 16)}`;
