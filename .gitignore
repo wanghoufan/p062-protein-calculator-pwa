@@ -31,7 +31,9 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
+!.env.example
 
 # typescript
 *.tsbuildinfo
@@ -39,3 +41,11 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# 本地数据与缓存
+*.log
+*.sqlite
+*.sqlite3
+
+# 项目临时交付（不入库）
+temp/
