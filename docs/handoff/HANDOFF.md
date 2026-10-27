@@ -4,12 +4,12 @@
 - 架构及仓库：`docs/architecture-facts.md`；风险：`docs/risks.md`；踩坑：`agent.md`；旧工程测试：`/Volumes/项目归档/027-ing-蛋白质计算器/docs/qa/BUGS-PWA.md`。
 
 ## §1 当前进展
-- 仓库历史已整合并推送，GitHub Actions 部署成功（当前线上对应 `de8af59`），线上打开与基础计算正常。
-- 2026-10-27 晚：定位线上 SW 因预缓存 `.nojekyll`（Pages 404）安装失败、离线不可用；修复已提交推送 `de8af59` 并部署。复验通过：桌面 Chrome 全新上下文 SW activated + controller、断网重开正常；Note 11T Pro+ 与 Note 11 5G 均 SW activated、断网重开正常、鸡胸肉 50g = 10g、清空回 0。
+- 历史已整合推送；线上为 SW 修复版（代码提交 `de8af59`，文档提交 `7e4b17e`，两者产物相同），打开与计算正常。
+- 2026-10-27 晚：定位线上 SW 因预缓存 `.nojekyll`（Pages 404）安装失败、离线不可用；已修复部署。复验通过：桌面 Chrome、Note 11T Pro+、Note 11 5G 均 SW activated、断网重开正常、鸡胸肉 50g = 10g、清空回 0。
 
 ## §2 下一步
-- iPhone Safari 加载、添加到主屏幕、离线行为需用户 iPhone 真机验证。
-- 首次发布签收；朋友所在网络与弱网可用性抽测。
+- iPhone 验收（需用户真机）：Safari 打开 https://wanghoufan.github.io/p062-protein-calculator-pwa/ ，验证加载、计算（鸡胸肉 50g = 10g）、分享→添加到主屏幕、从主屏幕断网重开；结果回填 §3 与验收记录。
+- 朋友网络/弱网抽测该线上地址；首次发布签收。
 
 ## §3 未完成
 - iPhone 相关未验证；首次发布未签收；朋友网络/弱网未确认。
