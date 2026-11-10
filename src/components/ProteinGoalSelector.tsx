@@ -20,9 +20,14 @@ interface ProteinGoalModeSelectorProps {
 export function ProteinGoalModeSelector({ mode, onSelectMode }: ProteinGoalModeSelectorProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const { t } = useT();
+  const { t, locale } = useT();
+  const isEnglish = locale === 'en';
   return (
-    <View style={styles.row} accessibilityRole="radiogroup" accessibilityLabel={t.goalModeA11y}>
+    <View
+      style={[styles.row, isEnglish && styles.rowEn]}
+      accessibilityRole="radiogroup"
+      accessibilityLabel={t.goalModeA11y}
+    >
       {t.goalModes &&
         (Object.keys(t.goalModes) as ProteinGoalMode[]).map((modeId) => {
           const selected = modeId === mode;
@@ -32,12 +37,12 @@ export function ProteinGoalModeSelector({ mode, onSelectMode }: ProteinGoalModeS
               accessibilityRole="radio"
               accessibilityState={{ selected }}
               accessibilityLabel={t.goalModes[modeId].name}
-              style={[styles.chip, selected && styles.chipSelected]}
+              style={[styles.chip, isEnglish && styles.chipEn, selected && styles.chipSelected]}
               onPress={() => onSelectMode(modeId)}
             >
               <Text
                 style={[styles.chipText, selected && styles.chipTextSelected]}
-                numberOfLines={1}
+                numberOfLines={isEnglish ? 2 : 1}
               >
                 {t.goalModes[modeId].name}
               </Text>
@@ -98,6 +103,11 @@ function createStyles(colors: Palette) {
       flexDirection: 'row',
       gap: 8,
     },
+    // 英文模式名明显长于中文（如 Fat Loss, Muscle Retention），单行等分会截断；
+    // 仅英文改为 2×2 换行，给每个模式足够宽度，中文布局保持不变。
+    rowEn: {
+      flexWrap: 'wrap',
+    },
     chip: {
       flex: 1,
       minHeight: 48,
@@ -106,6 +116,10 @@ function createStyles(colors: Palette) {
       alignItems: 'center',
       justifyContent: 'center',
       paddingHorizontal: 4,
+    },
+    chipEn: {
+      flexBasis: '47%',
+      paddingHorizontal: 8,
     },
     chipSelected: {
       backgroundColor: colors.primary,

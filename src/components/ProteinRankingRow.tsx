@@ -37,7 +37,13 @@ export function ProteinRankingRow({ entry, added, onAdd }: ProteinRankingRowProp
           ? colors.medalBronze
           : undefined;
   return (
-    <View style={[styles.row, badgeColor ? styles.rowTop : null]}>
+    <View
+      style={[
+        styles.row,
+        locale === 'en' && styles.rowEn,
+        badgeColor ? styles.rowTop : null,
+      ]}
+    >
       <View style={[styles.rankBadge, badgeColor ? { backgroundColor: `${badgeColor}26` } : null]}>
         <Text style={[styles.rankText, badgeColor ? { color: badgeColor } : null]}>
           {entry.rank}
@@ -45,7 +51,7 @@ export function ProteinRankingRow({ entry, added, onAdd }: ProteinRankingRowProp
       </View>
       <FoodIcon foodId={entry.foodId} foodName={displayName} size={40} />
       <View style={styles.nameCol}>
-        <Text style={styles.name} numberOfLines={1}>
+        <Text style={styles.name} numberOfLines={locale === 'en' ? 2 : 1}>
           {displayName}
         </Text>
         <Text style={styles.category}>{categoryText}</Text>
@@ -84,6 +90,10 @@ function createStyles(colors: Palette) {
       minHeight: 64,
       paddingHorizontal: spacing.sm,
       borderRadius: radius.control,
+    },
+    // 英文食物名更长，收紧列间距把宽度让给名称列（中文保持原间距）。
+    rowEn: {
+      gap: spacing.sm,
     },
     rowTop: {
       backgroundColor: colors.rankingRowBg,

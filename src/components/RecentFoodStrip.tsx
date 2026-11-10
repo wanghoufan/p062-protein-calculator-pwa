@@ -42,7 +42,7 @@ export function RecentFoodStrip({ foods, selectedIds, onToggle }: RecentFoodStri
             onPress={() => onToggle(food.id)}
           >
             <FoodIcon foodId={food.id} foodName={displayName} size={44} />
-            <Text style={styles.cellText} numberOfLines={1}>
+            <Text style={styles.cellText} numberOfLines={locale === 'en' ? 2 : 1}>
               {/* 透明状态前缀：+ / ✓ 状态由右上角徽标表达，同时避免与分类行食物名精确撞名 */}
               <Text style={styles.cellStatePrefix}>{selected ? '✓ ' : '+ '}</Text>
               {displayName}
