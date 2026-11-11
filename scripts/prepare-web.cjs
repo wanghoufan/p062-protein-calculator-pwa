@@ -15,9 +15,11 @@ const manifestBase = {
   background_color: '#FAF7F0', theme_color: '#FAF7F0',
   icons: [192, 512].map(size => ({ src: `./icon-${size}.png`, sizes: `${size}x${size}`, type: 'image/png' })),
 };
+// short_name 是 Android 启动器图标下的标签；英文装在 Android 14 单行只容约 15 字符，
+// 18 字符的 Protein Calculator 会被截成 Protein Calcula…，故英文短名压到 13 字符。
 const manifests = {
   zh: { ...manifestBase, name: '蛋白质计算器', short_name: '蛋白质计算器', lang: 'zh-CN' },
-  en: { ...manifestBase, name: 'Protein Calculator', short_name: 'Protein Calculator', lang: 'en' },
+  en: { ...manifestBase, name: 'Protein Calculator', short_name: 'ProtnCalc·pwa', lang: 'en' },
 };
 for (const [code, manifest] of Object.entries(manifests)) {
   fs.writeFileSync(path.join(dist, `manifest.${code}.webmanifest`), JSON.stringify(manifest, null, 2));
