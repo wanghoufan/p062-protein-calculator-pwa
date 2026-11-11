@@ -19,7 +19,6 @@ const zh = {
   // 品牌与设置
   appName: '蛋白质计算器',
   tagline: '科学计算 · 合理摄入 · 更健康的你',
-  pressBackAgainToExit: '再按一次返回键退出',
   aboutSlogan: '吃对蛋白质，更好的自己',
   aboutDesc: '首次联网打开并完成缓存后可离线使用；体重、食物与修改仅保存在本机。',
   settings: '设置',
@@ -354,7 +353,6 @@ export const en: Dict = {
   // 品牌与设置
   appName: 'Protein Calculator',
   tagline: 'Scientific · Balanced · A healthier you',
-  pressBackAgainToExit: 'Press back again to exit',
   aboutSlogan: 'Eat right on protein, be a better you',
   aboutDesc:
     'After the first online visit and caching, this app works offline; weight, foods and edits stay on this device only.',
