@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { preventAutoHideAsync, hideAsync } from 'expo-splash-screen';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { useProteinCalculator } from './src/hooks/useProteinCalculator';
+import { useBackExitGuard } from './src/hooks/useBackExitGuard';
 import { WeightCard } from './src/components/WeightCard';
 import { ProteinGoalSummaryCard } from './src/components/ProteinGoalSummaryCard';
 import {
@@ -45,6 +46,65 @@ function CalculatorHome() {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [rankingVisible, setRankingVisible] = useState(false);
   const [editorState, setEditorState] = useState<EditorMode | null>(null);
+  const [exitHintVisible, setExitHintVisible] = useState(false);
+  const exitHintTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const closeGoalPicker = useCallback(() => {
+    setGoalPickerVisible(false);
+    if (returnToRecord) {
+      setReturnToRecord(false);
+      setRecordVisible(true);
+    }
+  }, [returnToRecord]);
+
+  const hasOverlay =
+    detailVisible ||
+    recordVisible ||
+    goalPickerVisible ||
+    pickerVisible ||
+    rankingVisible ||
+    settingsVisible ||
+    editorState !== null;
+
+  // 返回键优先级：从上到下关掉最上层的弹层（render 顺序的逆序）。
+  const closeTopOverlay = useCallback(() => {
+    if (editorState) {
+      setEditorState(null);
+    } else if (settingsVisible) {
+      setSettingsVisible(false);
+    } else if (rankingVisible) {
+      setRankingVisible(false);
+    } else if (pickerVisible) {
+      setPickerVisible(false);
+    } else if (goalPickerVisible) {
+      closeGoalPicker();
+    } else if (recordVisible) {
+      setRecordVisible(false);
+    } else if (detailVisible) {
+      setDetailVisible(false);
+    }
+  }, [
+    editorState,
+    settingsVisible,
+    rankingVisible,
+    pickerVisible,
+    goalPickerVisible,
+    recordVisible,
+    detailVisible,
+    closeGoalPicker,
+  ]);
+
+  const showExitHint = useCallback(() => {
+    setExitHintVisible(true);
+    clearTimeout(exitHintTimer.current);
+    exitHintTimer.current = setTimeout(() => setExitHintVisible(false), 2000);
+  }, []);
+
+  useBackExitGuard({
+    hasOverlay,
+    onCloseOverlay: closeTopOverlay,
+    onShowExitHint: showExitHint,
+  });
 
   useEffect(() => {
     if (calculator.ready) {
@@ -253,13 +313,7 @@ function CalculatorHome() {
       {/* Web modal stacking follows render order: goal picker must be above the record sheet. */}
       <ProteinGoalPickerSheet
         visible={goalPickerVisible}
-        onClose={() => {
-          setGoalPickerVisible(false);
-          if (returnToRecord) {
-            setReturnToRecord(false);
-            setRecordVisible(true);
-          }
-        }}
+        onClose={closeGoalPicker}
         selection={calculator.proteinGoal}
         onSelect={(mode, level) => {
           calculator.setProteinGoal(mode, level);
@@ -300,6 +354,12 @@ function CalculatorHome() {
         onUpdateCustom={calculator.updateCustomFood}
         onDeleteCustom={calculator.deleteCustomFood}
       />
+
+      {exitHintVisible ? (
+        <View pointerEvents="none" style={styles.exitHint}>
+          <Text style={styles.exitHintText}>{t.pressBackAgainToExit}</Text>
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -414,6 +474,20 @@ function createStyles(colors: Palette) {
       fontSize: 15,
       fontWeight: '700',
       color: colors.surface,
+    },
+    exitHint: {
+      position: 'absolute',
+      bottom: 88,
+      alignSelf: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.82)',
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.sm,
+      borderRadius: 20,
+    },
+    exitHintText: {
+      color: '#FFFFFF',
+      fontSize: 14,
+      fontWeight: '600',
     },
   });
 }
