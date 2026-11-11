@@ -9,13 +9,21 @@ for (const name of ['icon-192.png', 'icon-512.png', 'apple-touch-icon.png']) {
   fs.copyFileSync(path.join(root, 'web-assets', name), path.join(dist, name));
 }
 fs.writeFileSync(path.join(dist, '.nojekyll'), '');
-const manifest = {
-  name: '蛋白质计算器', short_name: '蛋白质计算器', lang: 'zh-CN',
+// 主屏名称随界面语言变化：页面在运行时按 locale 切换 <link rel="manifest"> 指向的中/英两份清单。
+const manifestBase = {
   start_url: './', scope: './', display: 'standalone',
   background_color: '#FAF7F0', theme_color: '#FAF7F0',
   icons: [192, 512].map(size => ({ src: `./icon-${size}.png`, sizes: `${size}x${size}`, type: 'image/png' })),
 };
-fs.writeFileSync(path.join(dist, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2));
+const manifests = {
+  zh: { ...manifestBase, name: '蛋白质计算器', short_name: '蛋白质计算器', lang: 'zh-CN' },
+  en: { ...manifestBase, name: 'Protein Calculator', short_name: 'Protein Calculator', lang: 'en' },
+};
+for (const [code, manifest] of Object.entries(manifests)) {
+  fs.writeFileSync(path.join(dist, `manifest.${code}.webmanifest`), JSON.stringify(manifest, null, 2));
+}
+// 静态 index.html 的默认指向（中文）；运行时由 applyDocumentLocale 改写。
+fs.writeFileSync(path.join(dist, 'manifest.webmanifest'), JSON.stringify(manifests.zh, null, 2));
 const htmlPath = path.join(dist, 'index.html');
 let html = fs.readFileSync(htmlPath, 'utf8');
 html = html.replace('<html lang="en">', '<html lang="zh-CN">');

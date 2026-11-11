@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dict, DICTS, fmt } from './translations';
+import { applyDocumentLocale } from './documentMeta';
 
 /**
  * Change B：语言状态独立于业务 schema（v1/v2 迁移不感知）。
@@ -37,7 +38,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const locale = preference === 'system' ? systemLocale : preference;
 
   useEffect(() => {
-    if (typeof document !== 'undefined') document.documentElement.lang = locale === 'zh' ? 'zh-CN' : 'en';
+    applyDocumentLocale(locale);
   }, [locale]);
 
   useEffect(() => {
